@@ -1,0 +1,12 @@
+---
+title: "Getting Started"
+author: "Jean Fan"
+date: "September 12, 2016"
+output: html_document
+---
+
+Starting with a vcf file of putative germline heterozygous SNPs, get SNP read information from an aligned and indexed single cell RNA-seq bam. 
+
+getAlleleCount
+getCoverage
+getMats

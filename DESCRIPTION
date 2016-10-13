@@ -1,0 +1,22 @@
+Package: badger
+Type: Package
+Title: Bayesian Hierarchical Approach
+Version: 0.1
+Date: 2016-06-27
+Author: Jean Fan [aut, cre]
+Maintainer: Jean Fan <jeanfan@fas.harvard.edu>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+LazyData: TRUE
+Imports:
+    reshape2,
+    ggplot2,
+    gridExtra,
+    GenomicRanges,
+    VariantAnnotation,
+    Rsamtools,
+    Rcpp,
+    RcppArmadillo,
+    caTools,
+    RColorBrewer,
+    biomaRt
