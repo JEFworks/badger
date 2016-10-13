@@ -3,13 +3,13 @@
 #' @author: Jean Fan
 #'
 
-load('data/MM16.RData')
-mat <- log2(MM16.counts + 1)
-load('data/Normal.RData')
-mat.ref <- log2(Normal.counts + 1)
-genes.int <- intersect(rownames(mat), rownames(mat.ref))
-mat <- mat[genes.int,]
-mat.ref <- mat.ref[genes.int,]
+#load('data/MM16.RData')
+#mat <- log2(MM16.counts + 1)
+#load('data/Normal.RData')
+#mat.ref <- log2(Normal.counts + 1)
+#genes.int <- intersect(rownames(mat), rownames(mat.ref))
+#mat <- mat[genes.int,]
+#mat.ref <- mat.ref[genes.int,]
 
 
 normalizedExpression <- function(mat, mat.ref) {
@@ -46,12 +46,12 @@ normalizedExpression <- function(mat, mat.ref) {
     return(list(mat, mat.ref))
 }
 
-mat.tot <- cbind(mat, mat.ref)
-library(biomaRt) ## for gene coordinates
-mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
-gos <- getBM(values=rownames(mat.tot),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
-gos$pos <- (gos$start_position + gos$end_position)/2
-head(gos)
+#mat.tot <- cbind(mat, mat.ref)
+#library(biomaRt) ## for gene coordinates
+#mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+#gos <- getBM(values=rownames(mat.tot),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
+#gos$pos <- (gos$start_position + gos$end_position)/2
+#head(gos)
 
 plotExpHeatmap <- function(mat.tot, gos, zlim=c(-2,2), window.size = 101, orderCells=FALSE) {
 
