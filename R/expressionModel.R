@@ -57,7 +57,7 @@ plotExpHeatmap <- function(mat.tot, gos, zlim=c(-2,2), window.size = 101, orderC
 
     ## organize into chromosomes
     tl <- tapply(1:nrow(gos),as.factor(gos$chromosome_name),function(ii) {
-        na.omit(mat.tot[gos$ensembl_gene_id[ii[order(gos$pos[ii],decreasing=F)]],])
+        na.omit(mat.tot[gos[$ensembl_gene_id[,1][ii[order(gos$pos[ii],decreasing=F)]],])
     })
     ## only care about these chromosomes
     tl <- tl[c(as.factor(1:22), "X")]

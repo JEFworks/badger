@@ -168,10 +168,10 @@ clafProfile<- function(r, n.sc, l, n.bulk, filter=TRUE, region=NULL, delim=':', 
     }
 
     # order?
-    order <- names(sort(colSums(mat.tot>0, na.rm=TRUE), decreasing=FALSE))
+    #order <- names(sort(colSums(mat.tot>0, na.rm=TRUE), decreasing=FALSE))
     #order <- names(sort(colSums(mat.tot, na.rm=TRUE), decreasing=FALSE))
-    mat.tot <- mat.tot[, order]
-    n.tot <- n.tot[, order]
+    #mat.tot <- mat.tot[, order]
+    #n.tot <- n.tot[, order]
 
     ######
     ## Plot
