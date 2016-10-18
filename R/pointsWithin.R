@@ -3,9 +3,6 @@
 #' @author: Jean Fan
 #'
 
-library(GenomicRanges)
-library(BiocParallel)
-
 #' From data frame of ranges to GRanges object
 #'
 #' @examples
@@ -130,9 +127,10 @@ insideCnvs <- function(posList, cnvs) {
     return(hit)
 }
 
-# returns a factor vector across pos (chr:pos vector)
-# indicating if the pos is in one of the genes (row number)
-
+#' returns a factor vector across pos (chr:pos vector)
+#' indicating if the pos is in one of the genes (row number)
+#'
+#' @examples
 #' In this example gtf, the chromosomes do not have the 'chr' prefix
 #' posList <- data.frame(
 #'     'chr' = c('1', '1', '1', '2', '2', '3'),

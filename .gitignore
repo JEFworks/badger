@@ -5,5 +5,4 @@
 .RData
 .Rbuildignore
 data-raw/
-data/
 old/
