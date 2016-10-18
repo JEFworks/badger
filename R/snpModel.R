@@ -496,12 +496,14 @@ clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', 
 }
 
 
-#' Run BADGER expression-only model to assess posterior probability of CNVs given normalized expression data only
+#' Run BADGER allele-only model to assess posterior probability of CNVs given allele information only
 #'
 #' @param r Matrix of alt allele count in single cells
 #' @param cov.sc Matrix of coverage in single cells
 #' @param l Vector of alt allele count in bulk
 #' @param cov.bulk Vector of coverage in bulk
+#' @param region Region of interest such as expected CNV boundaries
+#' @param gtf GTF file contents for mapping SNPs to genes
 #' @param mono Rate of mono-allelic expression. Default: 0.7
 #' @param pe Effective error rate to capture error from sequencing, etc. Default: 0.01
 #' @param filter Boolean for whether to filter out SNP sites with no coverage. Default: TRUE
@@ -523,14 +525,14 @@ clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', 
 #' }
 #' region <- data.frame('chr'=2, start=0, end=1e9) # deletion region
 #' \dontrun{
-#' results <- calcCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
+#' results <- calcAlleleCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
 #' }
 #' region <- data.frame('chr'=3, start=0, end=1e9) # neutral region
 #' \dontrun{
-#' results <- calcCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
+#' results <- calcAlleleCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
 #' }
 #'
-calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, mono = 0.7, pe = 0.01, filter=TRUE, likelihood=FALSE, n.iter=1000, quiet=TRUE, delim=':') {
+calcAlleleCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, mono = 0.7, pe = 0.01, filter=TRUE, likelihood=FALSE, n.iter=1000, quiet=TRUE, delim=':') {
 
     #####
     # Clean

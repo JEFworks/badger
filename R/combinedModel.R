@@ -1,14 +1,54 @@
-################################################################### Combined
-calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gexp, fits, pe = 0.01, mono = 0.7, n.iter=1000, quiet=TRUE, delim=':') {
+#' Run BADGER combined model to assess posterior probability of CNVs given both allele and expression data
+#'
+#' @param r Matrix of alt allele count in single cells
+#' @param cov.sc Matrix of coverage in single cells
+#' @param l Vector of alt allele count in bulk
+#' @param cov.bulk Vector of coverage in bulk
+#' @param region Region of interest such as expected CNV boundaries
+#' @param gexp Normalized gene expression matrix
+#' @param fits Fit for variance around mean
+#' @param m Expected mean deviation due to copy number change
+#' @param mono Rate of mono-allelic expression. Default: 0.7
+#' @param pe Effective error rate to capture error from sequencing, etc. Default: 0.01
+#' @param filter Boolean for whether to filter out SNP sites with no coverage. Default: TRUE
+#' @param likelihood Boolean for whether to use likelihood based estimate of posterior. Default: FALSE
+#' @param n.iter Number of iterations in MCMC. Default: 1000
+#' @param quiet Boolean of whether to suppress progress bar. Default: TRUE
+#' @param delim Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897
+#' @return List of posterior probabilities for CNV and direction of CNV (deletion vs. amplification)
+#'
+#' @examples
+#' data('MM16.counts')
+#' mat <- log2(MM16.counts + 1)
+#' data('Normal.counts')
+#' mat.ref <- log2(Normal.counts + 1)
+#' mats <- normalizedExpression(mat, mat.ref)
+#' gexp <- mats[[1]]
+#' fits <- mvFit(gexp)
+#' region <- data.frame('chr'=1, start=0, end=1e9)
+#' data(snpsHet_MM16ScSample)
+#' data(snpsHet_MM16BulkSample)
+#' \dontrun{
+#' gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
+#' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
+#' region <- data.frame('chr'=2, start=0, end=1e9) # deletion region
+#' results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m=0.15)
+#' }
+#'
+calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m, filter=TRUE, pe = 0.01, mono = 0.7, n.iter=1000, quiet=TRUE, delim=':') {
 
     #####
     # Clean
     #####
 
-    # filter out snps without coverage
-    s <- rowSums(cov.sc) > 0
-    r <- r[s,]
-    cov.sc <- cov.sc[s,]
+    if(filter) {
+        # filter out snps without coverage
+        s <- rowSums(cov.sc) > 0
+        r <- r[s,]
+        cov.sc <- cov.sc[s,]
+        l <- l[s]
+        cov.bulk <- cov.bulk[s]
+    }
 
     ######
     ## Region
@@ -42,7 +82,7 @@ calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gexp, fits, pe = 0.0
 
     # associate each snp with a gene factor
     snpsName <- snp2df(chr.snps, delim=delim)
-    snps2genes <- geneFactors(snpsName, gtfFile, fill=T) # if not found in gtf, assume annotation error; make each unique gene factor
+    snps2genes <- geneFactors(snpsName, gtf, fill=T) # if not found in gtf, assume annotation error; make each unique gene factor
     names(snps2genes) <- chr.snps
 
     genes.of.interest <- unique(snps2genes)
@@ -55,19 +95,17 @@ calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gexp, fits, pe = 0.0
     })
     names(genes2snps.dict) <- genes.of.interest
 
-    # possible that gene does not have snp
+    # restrict to genes within region of interest
     restrict <- function(names, region) {
         start <- region$start
         end <- region$end
-        gos <- getBM(values=names,attributes=c("ensembl_transcript_id", "hgnc_symbol", "chromosome_name","start_position","end_position"),filters=c("hgnc_symbol"),mart=mart.obj)
         gos <- gos[gos$chromosome_name == region$chr,]
         gos$pos <- gos$start_position
-        rownames(gos) <- make.unique(gos$hgnc_symbol)
+        rownames(gos) <- make.unique(gos[,1])
         gos <- gos[names,]
         n <- names[which(gos$pos > start & gos$pos < end)]
         n
     }
-    # get all genes expressed in region
     vi <- restrict(rownames(gexp), region)
     print('number of genes expessed:')
     print(length(vi))
@@ -144,7 +182,7 @@ calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gexp, fits, pe = 0.0
         #'t' = mu0/2
     )
 
-    modelFile <- 'bug/combinedModel.bug'
+    modelFile <- system.file("bug", "combinedModel.bug", package = "badger")
 
     print('Initializing model...')
     # Joe says 4 chains is a standard, so just stick with 4 chains
