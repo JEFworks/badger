@@ -1,0 +1,202 @@
+---
+title: "Sample full analysis pipeline"
+output: html_document
+---
+
+```{r, eval=FALSE}
+
+####################### Read in data
+data <- "/home/pkharchenko/igor/NC/all_plates/SS2_16_396/counts.tab" # breast
+cd <- read.csv(data, sep="\t", stringsAsFactors=FALSE)
+rownames(cd) <- make.unique(cd[,1])
+cd <- cd[, 2:ncol(cd)]
+head(cd)
+
+####################### GTeX normal expression reference
+library(readxl)
+annot <- read_excel("../data-raw/GTEx_Data_V6_Annotations_SampleAttributesDS.xlsx")
+tissue <- annot$SMTSD
+names(tissue) <- annot$SAMPID
+breast_tissue <- names(tissue[grep('Breast', tissue)])
+breast_tissue <- gsub('-', '.', breast_tissue)
+
+gtex <- read.table(gzfile("../data-raw/GTEx_Analysis_v6p_RNA-seq_RNA-SeQCv1.1.8_gene_reads.gct.gz"), sep="\t", skip=2, stringsAsFactors=FALSE, header=TRUE)
+gtex[1:4,1:5]
+rownames(gtex) <- gtex[,1]
+
+gtex_breast <- gtex[, intersect(breast_tissue, colnames(gtex))]
+
+library(biomaRt) ## for gene coordinates
+mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+hsapiens.ENSEMBL2HUGO <- function(gene.list) {
+    gos <- getBM(gene.list,attributes=c("ensembl_gene_id", "hgnc_symbol"),filters=c("ensembl_gene_id"),mart=mart.obj)
+    gl <- gos[match(gene.list, gos[,1]), 2]
+    ## if not found, then keep ENSEMBL name
+    gl[is.na(gl)] <- gene.list[is.na(gl)]
+    return(gl)
+}
+
+rownames(gtex_breast) <- make.unique(hsapiens.ENSEMBL2HUGO(unlist(lapply(rownames(gtex_breast), function(x) strsplit(x, '[.]')[[1]][1]))))
+
+####################### badger
+#require(devtools)
+#devtools::install_github('JEFworks/badger', build_vignettes = FALSE)
+library(badger)
+
+## expression-based karyotyping
+mat <- log2(cd + 1)
+mat.ref <- log2(gtex_breast + 1)
+mats <- normalizedExpression(mat, mat.ref)
+mat.tot <- cbind(mats[[1]], mats[[2]])
+gos <- getBM(values=rownames(mat.tot),attributes=c("hgnc_symbol","chromosome_name","start_position","end_position"),filters=c("hgnc_symbol"), mart=mart.obj)
+gos$pos <- (gos$start_position + gos$end_position)/2
+tl <- plotExpHeatmap(mat.tot, gos, zlim=c(-0.5,0.5), window.size = 201)
+
+gexp <- mats[[1]]
+fits <- mvFit(gexp)
+region <- data.frame('chr'=1, start=1e6+500000, end=1e7+500000)
+set.seed(0)
+results <- calcGexpCnvProb(region, gexp, fits, 0.15)
+results1 <- results[[2]]
+
+## SNP analysis
+vcfFile <- "../data-raw/ExAC.r0.3.sites.vep.vcf.gz"
+
+library(GenomicRanges)
+testRanges <- GRanges(1, IRanges(start = 1e6+500000, end=1e7+500000))
+library(VariantAnnotation)
+param <- ScanVcfParam(which=testRanges)
+vcf <- readVcf(vcfFile, "hg19", param=param)
+
+# common snps by MAF
+info <- as.data.frame(info(vcf))
+print(dim(info))
+print(head(info))
+maf <- info[, 'AF'] # AF is Integer allele frequency for each Alt allele
+print("number of snps with maf > 0.1:")
+vi <- sapply(maf, function(x) any(x > 0.1))
+print(table(vi))
+
+# convert to alleleInfo
+snpsDf <- as.data.frame(rowRanges(vcf)[vi,])
+head(snpsDf)
+alleleInfo <- data.frame(
+        'contig' = paste0('chr', as.character(snpsDf[,1])),
+        'position' = as.numeric(snpsDf[,2]),
+        'ref_allele' = as.character(snpsDf$REF),
+        'alt_allele' = sapply(snpsDf$ALT, function(i) paste(as.character(i), collapse=',')),
+        stringsAsFactors = FALSE
+        )
+alleleInfo <- cbind(alleleInfo, 'AF'=maf[vi])
+
+# get rid of non single nucleotide changes
+vi <- sapply(alleleInfo$ref_allele, nchar) == 1
+alleleInfo <- alleleInfo[vi,]
+# also gets rid of sites with multiple alt alleles though...hard to know which is in our patient
+vi <- sapply(alleleInfo$alt_allele, nchar) == 1
+alleleInfo <- alleleInfo[vi,]
+dim(alleleInfo)
+
+## convert to hg38
+library(rtracklayer)
+ch <- import.chain("../data-raw/hg19ToHg38.over.chain")
+ai <- alleleInfo
+ai$start <- ai$end <- ai$pos
+ai$seqnames <- ai$contig
+tx_hg19 <- makeGRangesFromDataFrame(ai) 
+tx_hg38 <- liftOver(tx_hg19, ch)
+
+tx_hg38_df <- as.data.frame(tx_hg38)
+
+alleleInfo_hg38 <- cbind(data.frame(
+        'contig' = tx_hg38_df$seqnames,
+        'position' = tx_hg38_df$start
+        ),
+        alleleInfo[tx_hg38_df$group,c('ref_allele', 'alt_allele')]
+        )
+head(alleleInfo_hg38)
+
+## get coverage
+path <- '/home/jfan/Projects/Renal/data-raw/SS2_16_396_bam/davidson/rickards/pipeline2016/rnaseq/hsa/SS2_16_396/star_hg38'
+files <- list.dirs(path = path)
+files <- files[-1]
+#f <- files[1]
+## cov <- do.call(cbind, lapply(files, function(f) {
+##     name <- gsub(path, '', f)
+##     print(name)
+##     bamFile <- paste0(f, name, '_unique.bam')
+##     indexFile <- paste0(f, name, '_unique.bam.bai')
+##     if(!file.exists(indexFile)) {
+##         command = paste0("samtools index ", bamFile)
+##         system(command)
+##     }
+##     getCoverage(alleleInfo_hg38, bamFile, indexFile)
+## }))
+## colnames(cov) <- gsub(paste0(path, '/'), '', files)
+## head(cov)
+
+## ## any coverage?
+## print("Snps with coverage:")
+## print(table(rowSums(cov)>0))
+## range(rowSums(cov>0))
+## vi <- rowSums(cov)>0
+## cov <- cov[vi,]
+
+## alleleInfo <- alleleInfo[vi,]
+## dim(alleleInfo)
+
+print("Getting allele counts...")
+alleleCounts <- lapply(files, function(f) {
+    name <- gsub(path, '', f)
+    print(name)
+    bamFile <- paste0(f, name, '_unique.bam')
+    indexFile <- paste0(f, name, '_unique.bam.bai')
+    getAlleleCount(alleleInfo_hg38, bamFile, indexFile)
+})
+altCounts <- do.call(cbind, lapply(1:length(alleleCounts), function(i) alleleCounts[[i]][[1]]))
+refCounts <- do.call(cbind, lapply(1:length(alleleCounts), function(i) alleleCounts[[i]][[2]]))
+colnames(altCounts) <- colnames(refCounts) <- gsub(paste0(path, '/'), '', files)
+
+## Now that we have these allele counts, we can plot
+r <- altCounts
+n.sc <- altCounts+refCounts
+l <- rowSums(r>0)
+n.bulk <- rowSums(n.sc>0)
+
+## filter for actual evidence of hets
+vi <- n.bulk>0
+table(vi)
+r <- r[vi,]
+n.sc <- n.sc[vi,]
+l <- l[vi]
+n.bulk <- n.bulk[vi]
+
+vi <- l/n.bulk < 0.9 & l/n.bulk > 0.1
+table(vi)
+r <- r[vi,]
+n.sc <- n.sc[vi,]
+l <- l[vi]
+n.bulk <- n.bulk[vi]
+
+## fix names
+rownames(r) <- rownames(n.sc) <- names(l) <- names(n.bulk) <- gsub('chr', '', rownames(r))  
+
+## visualize
+clafProfile(r, n.sc, l, n.bulk)
+
+gtfFile <- '~/Resources/Homo_sapiens.GRCh37.75.gtf'
+gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
+results2 <- calcAlleleCnvProb(r, n.sc, l, n.bulk, region, gtf)
+
+## Combined method
+results <- calcCombCnvProb(r, n.sc, l, n.bulk, region, gtf, gexp, fits, m=0.15)
+dd <- results[[length(results)]]
+S <- results[1:(length(results)-1)]
+results3 <- S * (1 - dd) ## deletion prob
+names(results3) <- colnames(r)
+
+plot(results1, results3)
+plot(results2, results3)
+plot(results1, results2)
+
+```
