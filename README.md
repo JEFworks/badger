@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/JEFworks/badger.svg?branch=master)](https://travis-ci.org/JEFworks/badger)
 
+<img src="badger.png">
+
 The `badger` package implements a hierarchical Bayesian approach for inferring copy number alterations and loss of heterozygosity events from single-cell RNA-seq data based on allele and gene expression patterns.
 
 
