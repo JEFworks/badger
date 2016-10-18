@@ -24,7 +24,6 @@ Returns a factor vector across pos (chr:pos vector)
 indicating if the pos is in one of the genes (row number)
 }
 \examples{
-In this example gtf, the chromosomes do not have the 'chr' prefix
 posList <- data.frame(
     'chr' = c('1', '1', '1', '2', '2', '3'),
     'pos' = c(11869+7, 11869+100, 14363+101, 29554+0, 52473+10, 62948+5)

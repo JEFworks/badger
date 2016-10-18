@@ -7,6 +7,7 @@
 #' @param region Region of interest such as expected CNV boundaries
 #' @param gexp Normalized gene expression matrix
 #' @param fits Fit for variance around mean
+#' @param gos Gene position table
 #' @param m Expected mean deviation due to copy number change
 #' @param mono Rate of mono-allelic expression. Default: 0.7
 #' @param pe Effective error rate to capture error from sequencing, etc. Default: 0.01
@@ -32,11 +33,15 @@
 #' gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
 #' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
 #' region <- data.frame('chr'=2, start=0, end=1e9) # deletion region
-#' results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m=0.15)
+#' library(biomaRt) ## for gene coordinates
+#' mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+#' gos <- getBM(values=rownames(mat.tot),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
+#' gos$pos <- (gos$start_position + gos$end_position)/2
+#' results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m=0.15)
 #' }
 #'
 #' @export
-calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m, filter=TRUE, pe = 0.01, mono = 0.7, n.iter=1000, quiet=TRUE, delim=':') {
+calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m, filter=TRUE, pe = 0.01, mono = 0.7, n.iter=1000, quiet=TRUE, delim=':') {
 
     #####
     # Clean

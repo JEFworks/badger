@@ -4,7 +4,7 @@
 \alias{calcCombCnvProb}
 \title{Run BADGER combined model to assess posterior probability of CNVs given both allele and expression data}
 \usage{
-calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m,
+calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m,
   filter = TRUE, pe = 0.01, mono = 0.7, n.iter = 1000, quiet = TRUE,
   delim = ":")
 }
@@ -22,6 +22,8 @@ calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m,
 \item{gexp}{Normalized gene expression matrix}
 
 \item{fits}{Fit for variance around mean}
+
+\item{gos}{Gene position table}
 
 \item{m}{Expected mean deviation due to copy number change}
 
@@ -60,7 +62,11 @@ data(snpsHet_MM16BulkSample)
 gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
 gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\\t')
 region <- data.frame('chr'=2, start=0, end=1e9) # deletion region
-results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m=0.15)
+library(biomaRt) ## for gene coordinates
+mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+gos <- getBM(values=rownames(mat.tot),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
+gos$pos <- (gos$start_position + gos$end_position)/2
+results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m=0.15)
 }
 }
 

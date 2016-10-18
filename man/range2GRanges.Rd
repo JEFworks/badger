@@ -6,6 +6,9 @@
 \usage{
 range2GRanges(df)
 }
+\arguments{
+\item{df}{Data frame with chr, start, and end columns}
+}
 \description{
 From data frame of ranges to GRanges object
 }

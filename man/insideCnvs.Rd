@@ -7,9 +7,9 @@
 insideCnvs(posList, cnvs)
 }
 \arguments{
-\item{posList}{data frame ($chr / $pos)}
+\item{posList}{Dataframe ($chr / $pos)}
 
-\item{cnvs}{: data frame ($chr / $start / $end)}
+\item{cnvs}{Dataframe ($chr / $start / $end)}
 }
 \value{
 a T/F vector of whether the positions are in the CNVs

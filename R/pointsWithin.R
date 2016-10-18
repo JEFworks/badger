@@ -3,6 +3,8 @@
 
 #' From data frame of ranges to GRanges object
 #'
+#' @param df Data frame with chr, start, and end columns
+#'
 #' @examples
 #' cnv <- data.frame(
 #'    'chr' = c('chr1', 'chr2'),
@@ -23,6 +25,8 @@ range2GRanges <- function(df) {
 
 #' From data frame of positions to GRanges object
 #'
+#' @param df Dataframe with chr and pos columns
+#'
 #' @examples
 #' snps <- data.frame(
 #' 'chr' = c('chr2', 'chr1'),
@@ -31,6 +35,7 @@ range2GRanges <- function(df) {
 #' pos2GRanges(snps)
 #'
 #' @export
+#'
 pos2GRanges <- function(df) {
     gr <- GenomicRanges::GRanges(
         seqnames = df[,1],
@@ -41,6 +46,9 @@ pos2GRanges <- function(df) {
 
 
 #' Determine if a point is within a range
+#'
+#' @param pos Dataframe with chr and pos columns
+#' @param cnv Dataframe with chr, start, and end columns
 #'
 #' @examples
 #' snp1 <- data.frame(
@@ -62,6 +70,7 @@ pos2GRanges <- function(df) {
 #' pointsWithin(snp2, cnv)
 #'
 #' @export
+#'
 pointsWithin <- function(pos, ranges) {
     posGRanges <- pos2GRanges(pos)
     rangesGRanges <- range2GRanges(ranges)
@@ -105,8 +114,8 @@ insideRange <- function(posList, range) {
 
 #' Returns a vector of T/F depending on whether SNPs are in CNV regions
 #'
-#' @param posList data frame ($chr / $pos)
-#' @param cnvs : data frame ($chr / $start / $end)
+#' @param posList Dataframe ($chr / $pos)
+#' @param cnvs Dataframe ($chr / $start / $end)
 #' @return a T/F vector of whether the positions are in the CNVs
 #'
 #' @examples
@@ -143,7 +152,6 @@ insideCnvs <- function(posList, cnvs) {
 #' @return a factor vector across pos (chr:pos vector) indicating if the pos is in one of the genes (row number)
 #'
 #' @examples
-#' In this example gtf, the chromosomes do not have the 'chr' prefix
 #' posList <- data.frame(
 #'     'chr' = c('1', '1', '1', '2', '2', '3'),
 #'     'pos' = c(11869+7, 11869+100, 14363+101, 29554+0, 52473+10, 62948+5)

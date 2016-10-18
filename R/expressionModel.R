@@ -197,6 +197,7 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 #' @param fits Fit for variance around mean
 #' @param m Expected mean deviation due to copy number change
 #' @param region Region of interest such as expected CNV boundaries
+#' @param gos Gene position table
 #' @param quiet Boolean for whether to suppress progress display
 #' @return List of posterior probabilities for amplification and deletion
 #'
@@ -210,11 +211,15 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 #' fits <- mvFit(gexp)
 #' region <- data.frame('chr'=1, start=0, end=1e9)
 #' set.seed(0)
-#' results <- calcGexpCnvProb(gexp, fits, 0.15, region)
+#' library(biomaRt) ## for gene coordinates
+#' mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+#' gos <- getBM(values=rownames(gexp),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
+#' gos$pos <- (gos$start_position + gos$end_position)/2
+#' results <- calcGexpCnvProb(gexp, fits, 0.15, region, gos)
 #'
 #' @export
 #'
-calcGexpCnvProb <- function(gexp, fits, m, region, quiet=TRUE) {
+calcGexpCnvProb <- function(gexp, fits, m, region, gos, quiet=TRUE) {
 
     # restrict to genes within region of interest
     restrict <- function(names, region) {

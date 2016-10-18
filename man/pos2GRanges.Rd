@@ -6,6 +6,9 @@
 \usage{
 pos2GRanges(df)
 }
+\arguments{
+\item{df}{Dataframe with chr and pos columns}
+}
 \description{
 From data frame of positions to GRanges object
 }

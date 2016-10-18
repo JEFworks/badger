@@ -4,7 +4,7 @@
 \alias{calcGexpCnvProb}
 \title{Run BADGER expression-only model to assess posterior probability of CNVs given normalized expression data only}
 \usage{
-calcGexpCnvProb(gexp, fits, m, region, quiet = TRUE)
+calcGexpCnvProb(gexp, fits, m, region, gos, quiet = TRUE)
 }
 \arguments{
 \item{gexp}{Normalized gene expression matrix}
@@ -14,6 +14,8 @@ calcGexpCnvProb(gexp, fits, m, region, quiet = TRUE)
 \item{m}{Expected mean deviation due to copy number change}
 
 \item{region}{Region of interest such as expected CNV boundaries}
+
+\item{gos}{Gene position table}
 
 \item{quiet}{Boolean for whether to suppress progress display}
 }
@@ -33,6 +35,10 @@ gexp <- mats[[1]]
 fits <- mvFit(gexp)
 region <- data.frame('chr'=1, start=0, end=1e9)
 set.seed(0)
-results <- calcGexpCnvProb(gexp, fits, 0.15, region)
+library(biomaRt) ## for gene coordinates
+mart.obj <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = 'hsapiens_gene_ensembl', host = "jul2015.archive.ensembl.org")
+gos <- getBM(values=rownames(gexp),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
+gos$pos <- (gos$start_position + gos$end_position)/2
+results <- calcGexpCnvProb(gexp, fits, 0.15, region, gos)
 }
 

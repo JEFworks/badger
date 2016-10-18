@@ -6,6 +6,11 @@
 \usage{
 pointsWithin(pos, ranges)
 }
+\arguments{
+\item{pos}{Dataframe with chr and pos columns}
+
+\item{cnv}{Dataframe with chr, start, and end columns}
+}
 \description{
 Determine if a point is within a range
 }
