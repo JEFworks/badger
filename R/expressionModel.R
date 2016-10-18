@@ -96,6 +96,7 @@ plotExpHeatmap <- function(mat.tot, gos, zlim=c(-2,2), window.size = 101, autoso
         order <- hc$order
     }
 
+    require(RColorBrewer)
     pcol <- rev(colorRampPalette(brewer.pal(11, 'RdBu'))(100))
     # https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
     chr.sizes <- c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663, 146364022, 141213431, 135534747, 135006516, 133851895, 115169878, 107349540, 102531392, 90354753, 81195210, 78077248, 59128983, 63025520, 51304566, 48129895)
@@ -246,7 +247,7 @@ calcGexpProb <- function(region, gexp, fits, m, quiet=TRUE) {
         'sigma0' = sigma0,
         'mag0' = m
     )
-    modelFile <-  'inst/bug/expressionModel.bug'
+    modelFile <-  system.file("bug", "expressionModel.bug", package = "badger")
 
     print('Initializing model...')
     # Joe says 4 chains is a standard, so just stick with 4 chains

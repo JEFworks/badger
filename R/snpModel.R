@@ -649,7 +649,7 @@ calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, mono = 0.7, pe = 0.
         # 'tau' = 1,
         'mono' = mono)
 
-    modelFile <- 'inst/bug/snpModel.bug'
+    modelFile <- system.file("bug", "snpModel.bug", package = "badger")
 
     print('Initializing model...')
     ## 2 random chains
