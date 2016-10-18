@@ -22,7 +22,7 @@ devtools::install_github('JEFworks/badger', build_vignettes = FALSE)
 
 # Contributing
 
-We welcome any bug reports, enhancement requests, and other contributions. To submit a bug report or enhancement request, or for general discussions or troubleshooting, please use the [`badger` GitHub issues tracker](https://github.com/hms-dbmi/scde/issues). For more substantial contributions, please fork this repo, push your changes to your fork, and submit a pull request with a good commit message. 
+We welcome any bug reports, enhancement requests, and other contributions. To submit a bug report or enhancement request, or for general discussions or troubleshooting, please use the [`badger` GitHub issues tracker](https://github.com/JEFworks/badger/issues). For more substantial contributions, please fork this repo, push your changes to your fork, and submit a pull request with a good commit message. 
 
 ---
     
