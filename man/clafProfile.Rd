@@ -8,13 +8,23 @@ clafProfile(r, n.sc, l, n.bulk, region = NULL, filter = TRUE, delim = ":",
   gtf = NULL, plotGene = FALSE)
 }
 \arguments{
-\item{r}{alt allele count in single cells}
+\item{r}{Alt allele count in single cells}
 
-\item{l}{alt allele count in bulk}
+\item{n.sc}{Coverage in single cells}
 
-\item{cov.sc}{coverage in single cells}
+\item{l}{Alt allele count in bulk}
 
-\item{cov}{coverage in bulk}
+\item{region}{Restrict plotting to select region. Optional. Default: NULL}
+
+\item{filter}{Boolean of whether to filter for SNPs with coverage. Default: TRUE}
+
+\item{delim}{Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897}
+
+\item{gtf}{GTF file contents for mapping SNPs to genes. Required if plotGene = TRUE}
+
+\item{plotGene}{Boolean of whether to plot gene track. Default: FALSE}
+
+\item{n}{Coverage in bulk}
 }
 \description{
 Composite Minor Allele Frequency (CLAF) Profile plot

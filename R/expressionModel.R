@@ -208,7 +208,7 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 #' mats <- normalizedExpression(mat, mat.ref)
 #' gexp <- mats[[1]]
 #' fits <- mvFit(gexp)
-#' region <- data.frame('chr'=chr, start=0, end=1e9)
+#' region <- data.frame('chr'=1, start=0, end=1e9)
 #' set.seed(0)
 #' results <- calcGexpCnvProb(gexp, fits, 0.15, region)
 #'

@@ -249,10 +249,16 @@ getCoverage <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 
 #' Composite Minor Allele Frequency (CLAF) Profile plot
 #'
-#' @param r alt allele count in single cells
-#' @param cov.sc coverage in single cells
-#' @param l alt allele count in bulk
-#' @param cov coverage in bulk
+#' @param r Alt allele count in single cells
+#' @param n.sc Coverage in single cells
+#' @param l Alt allele count in bulk
+#' @param n Coverage in bulk
+#' @param region Restrict plotting to select region. Optional. Default: NULL
+#' @param filter Boolean of whether to filter for SNPs with coverage. Default: TRUE
+#' @param delim Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897
+#' @param gtf GTF file contents for mapping SNPs to genes. Required if plotGene = TRUE
+#' @param plotGene Boolean of whether to plot gene track. Default: FALSE
+#'
 #'
 #' @examples
 #' ## Single cell data
