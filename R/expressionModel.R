@@ -187,6 +187,14 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 }
 
 #' Run BADGER expression-only model to assess posterior probability of CNVs given normalized expression data only
+#'
+#' @param region Region of interest such as expected CNV boundaries
+#' @param gexp Normalized gene expression matrix
+#' @param fits Fit for variance around mean
+#' @param m Expected mean deviation due to copy number change
+#' @param quiet Boolean for whether to suppress progress display
+#' @return List of posterior probabilities for amplification and deletion
+#'
 #' @examples
 #' data('MM16.counts')
 #' mat <- log2(MM16.counts + 1)
@@ -197,7 +205,7 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 #' fits <- mvFit(gexp)
 #' region <- data.frame('chr'=chr, start=0, end=1e9)
 #' set.seed(0)
-#' r <- calcGexpProb(region, gexp, fits, 0.15)
+#' results <- calcGexpProb(region, gexp, fits, 0.15)
 #'
 calcGexpProb <- function(region, gexp, fits, m, quiet=TRUE) {
 
@@ -240,7 +248,7 @@ calcGexpProb <- function(region, gexp, fits, m, quiet=TRUE) {
         'sigma0' = sigma0,
         'mag0' = m
     )
-    modelFile <-  'bug/expressionModel.bug'
+    modelFile <-  'inst/bug/expressionModel.bug'
 
     print('Initializing model...')
     # Joe says 4 chains is a standard, so just stick with 4 chains

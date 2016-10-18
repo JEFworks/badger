@@ -13,6 +13,58 @@
 #'   altAlleleCount alternative allele count information for each position of interest
 #'   refAlleleCount reference allele count information for each position of interest
 #'
+#' @examples
+#' \donrun{
+#' Get germline hets from ExAC database or output from GATK for example
+#' vcfFile <- "data-raw/ExAC.r0.3.sites.vep.vcf.gz"
+#' # example with region of chromosome
+#' chr <- 1
+#' testRanges <- GRanges(chr, IRanges(start = 80000000, width=10000000))
+#' param = ScanVcfParam(which=testRanges)
+#' vcf <- readVcf(vcfFile, "hg19", param=param)
+#' # common snps by MAF
+#' info <- as.data.frame(info(vcf))
+#' print(dim(info))
+#' print(head(info))
+#' maf <- info[, 'AF'] # AF is Integer allele frequency for each Alt allele
+#' print("number of snps with maf > 0.1:")
+#' vi <- sapply(maf, function(x) any(x > 0.1))
+#' print(table(vi))
+#' # convert to alleleInfo
+#' snpsDf <- as.data.frame(rowData(vcf)[vi,])
+#' alleleInfo <- data.frame(
+#'     'contig' = paste0('chr', as.character(snpsDf[,1])),
+#'      'position' = as.numeric(snpsDf[,2]),
+#'      'ref_allele' = as.character(snpsDf$REF),
+#'      'alt_allele' = sapply(snpsDf$ALT, function(i) paste(as.character(i), collapse=',')),
+#'      stringsAsFactors = FALSE
+#' )
+#' alleleInfo <- cbind(alleleInfo, 'AF'=maf[vi])
+#' # get rid of non single nucleotide changes
+#' vi <- sapply(alleleInfo$ref_allele, nchar) == 1
+#' alleleInfo <- alleleInfo[vi,]
+#' # also gets rid of sites with multiple alt alleles though...hard to know which is in our patient
+#' vi <- sapply(alleleInfo$alt_allele, nchar) == 1
+#' alleleInfo <- alleleInfo[vi,]
+#' # fix chromosome name
+#' alleleInfo[,1] <- gsub('chr', '', alleleInfo[,1])
+#' # Now that we have putative heterozygous germline SNPs
+#' # we can get the coverage at these SNP sites from our bams
+#' print("Getting allele counts...")
+#' path <- 'bams/'
+#' files <- list.files(path = path)
+#' files <- files[grepl('.bam$', files)]
+#' alleleCounts <- lapply(files, function(f) {
+#'    print(f)
+#'    bamFile <- paste0(path, f)
+#'    indexFile <- paste0(path, paste0(f, '.bai'))
+#'    getAlleleCount(alleleInfo, bamFile, indexFile)
+#' })
+#' altCounts <- do.call(cbind, lapply(1:length(alleleCounts), function(i) alleleCounts[[i]][[1]]))
+#' refCounts <- do.call(cbind, lapply(1:length(alleleCounts), function(i) alleleCounts[[i]][[2]]))
+#' colnames(altCounts) <- colnames(refCounts) <- files
+#' }
+#'
 getAlleleCount <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 
     # Split posName into components for GRanges
@@ -85,6 +137,56 @@ getAlleleCount <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 #' @param indexFile bai index file
 #' @param verbose Boolean of whether or not to print progress and info
 #' @return totCount Total coverage count information for each position of interest
+#'
+#' @examples
+#' \donrun{
+#' Get germline hets from ExAC database or output from GATK for example
+#' vcfFile <- "data-raw/ExAC.r0.3.sites.vep.vcf.gz"
+#' # example with region of chromosome
+#' chr <- 1
+#' testRanges <- GRanges(chr, IRanges(start = 80000000, width=10000000))
+#' param = ScanVcfParam(which=testRanges)
+#' vcf <- readVcf(vcfFile, "hg19", param=param)
+#' # common snps by MAF
+#' info <- as.data.frame(info(vcf))
+#' print(dim(info))
+#' print(head(info))
+#' maf <- info[, 'AF'] # AF is Integer allele frequency for each Alt allele
+#' print("number of snps with maf > 0.1:")
+#' vi <- sapply(maf, function(x) any(x > 0.1))
+#' print(table(vi))
+#' # convert to alleleInfo
+#' snpsDf <- as.data.frame(rowData(vcf)[vi,])
+#' alleleInfo <- data.frame(
+#'     'contig' = paste0('chr', as.character(snpsDf[,1])),
+#'      'position' = as.numeric(snpsDf[,2]),
+#'      'ref_allele' = as.character(snpsDf$REF),
+#'      'alt_allele' = sapply(snpsDf$ALT, function(i) paste(as.character(i), collapse=',')),
+#'      stringsAsFactors = FALSE
+#' )
+#' alleleInfo <- cbind(alleleInfo, 'AF'=maf[vi])
+#' # get rid of non single nucleotide changes
+#' vi <- sapply(alleleInfo$ref_allele, nchar) == 1
+#' alleleInfo <- alleleInfo[vi,]
+#' # also gets rid of sites with multiple alt alleles though...hard to know which is in our patient
+#' vi <- sapply(alleleInfo$alt_allele, nchar) == 1
+#' alleleInfo <- alleleInfo[vi,]
+#' # fix chromosome name
+#' alleleInfo[,1] <- gsub('chr', '', alleleInfo[,1])
+#' # Now that we have putative heterozygous germline SNPs
+#' # we can get the coverage at these SNP sites from our bams
+#' print("Getting coverage...")
+#' path <- 'bams/'
+#' files <- list.files(path = path)
+#' files <- files[grepl('.bam$', files)]
+#' cov <- do.call(cbind, lapply(files, function(f) {
+#'     print(f)
+#'     bamFile <- paste0(path, f)
+#'     indexFile <- paste0(path, paste0(f, '.bai'))
+#'     getCoverage(alleleInfo, bamFile, indexFile)
+#' }))
+#' colnames(cov) <- files
+#' }
 #'
 getCoverage <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 
@@ -161,7 +263,7 @@ getCoverage <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 #' region <- data.frame('chr'=3, start=0, end=1e9) # neutral region
 #' clafProfile(r, cov.sc, l, cov.bulk, region)
 #'
-clafProfile<- function(r, n.sc, l, n.bulk, filter=TRUE, region=NULL, delim=':', gtf=NULL, plotGene=FALSE) {
+clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', gtf=NULL, plotGene=FALSE) {
 
     if(filter) {
         #####
@@ -182,7 +284,7 @@ clafProfile<- function(r, n.sc, l, n.bulk, filter=TRUE, region=NULL, delim=':', 
         ######
         print('localing snps to deletion region...')
 
-        snps <- rownames(cov.sc)
+        snps <- rownames(n.sc)
         vi <- insideCnvs(snp2df(snps, delim=delim), region)
         chr.snps <- snps[vi]
 
@@ -396,37 +498,54 @@ clafProfile<- function(r, n.sc, l, n.bulk, filter=TRUE, region=NULL, delim=':', 
 }
 
 
-#' @param mono rate of mono-allelic expression; currently just number (ex. 0.7)
-#' @param r matrix of alt allele count in single cells
-#' @param cov.sc matrix of coverage in single cells
-#' @param l matrix of alt allele count in bulk
-#' @param n.bulk matrix of coverage in bulk
+#' Run BADGER expression-only model to assess posterior probability of CNVs given normalized expression data only
+#'
+#' @param r Matrix of alt allele count in single cells
+#' @param cov.sc Matrix of coverage in single cells
+#' @param l Vector of alt allele count in bulk
+#' @param cov.bulk Vector of coverage in bulk
+#' @param mono Rate of mono-allelic expression. Default: 0.7
+#' @param pe Effective error rate to capture error from sequencing, etc. Default: 0.01
+#' @param filter Boolean for whether to filter out SNP sites with no coverage. Default: TRUE
+#' @param likelihood Boolean for whether to use likelihood based estimate of posterior. Default: FALSE
+#' @param n.iter Number of iterations in MCMC. Default: 1000
+#' @param quiet Boolean of whether to suppress progress bar. Default: TRUE
+#' @param delim Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897
+#'
+#' @return Posterior probability of deletion or LOH
 #'
 #' @examples
-#' sample <- 'MM34'
-#' chr <- 4
-#' region1 <- 59251
-#' region2 <- 190948001
-#' mono <- 0.7
-#' region <- data.frame(chr, region1, region2)
 #' ## Single cell data
-#' load(paste('../test/', sample, '_sc.RData', sep=''))
+#' data(snpsHet_MM16ScSample)
 #' ## Bulk exome
-#' load(paste('../test/', sample, '_exome.RData', sep=''))
-#' gtfFile <- '/home/pvk1/mm/Homo_sapiens.GRCh37.75.gtf'
-#' pe = 0.004
-#' n.iter = 10
+#' data(snpsHet_MM16BulkSample)
+#' \dontrun {
+#' gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
+#' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
+#' }
+#' region <- data.frame('chr'=2, start=0, end=1e9) # deletion region
+#' \dontrun{
+#' results <- calcCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
+#' }
+#' region <- data.frame('chr'=3, start=0, end=1e9) # neutral region
+#' \dontrun{
+#' results <- calcCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
+#' }
 #'
-calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, mono, pe, gtfFile, likelihood=TRUE, n.iter=100, quiet=TRUE, delim=' ') {
+calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, mono = 0.7, pe = 0.01, filter=TRUE, likelihood=FALSE, n.iter=1000, quiet=TRUE, delim=':') {
 
     #####
     # Clean
     #####
 
-    # filter out snps without coverage
-    s <- rowSums(cov.sc) > 0
-    r <- r[s,]
-    cov.sc <- cov.sc[s,]
+    if(filter) {
+        # filter out snps without coverage
+        s <- rowSums(cov.sc) > 0
+        r <- r[s,]
+        cov.sc <- cov.sc[s,]
+        l <- l[s]
+        cov.bulk <- cov.bulk[s]
+    }
 
     ######
     ## Deletion regions
@@ -462,7 +581,7 @@ calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, mono, pe, gtfFile, likel
 
     # associate each snp with a gene factor
     snpsName <- snp2df(chr.snps, delim=delim)
-    snps2genes <- geneFactors(snpsName, gtfFile, fill=T) # if not found in gtf, assume annotation error; make each unique gene factor
+    snps2genes <- geneFactors(snpsName, gtf, fill=T) # if not found in gtf, assume annotation error; make each unique gene factor
     names(snps2genes) <- chr.snps
 
     genes.of.interest <- unique(snps2genes)
@@ -532,7 +651,7 @@ calcCnvProb <- function(r, cov.sc, l, cov.bulk, region, mono, pe, gtfFile, likel
         # 'tau' = 1,
         'mono' = mono)
 
-    modelFile <- '/n/data1/hms/dbmi/park/jfan/Projects/SCDE_Benchmark/Patel_GBM/badger_test/bug/cnvProb.bug'
+    modelFile <- 'inst/bug/snpModel.bug'
 
     print('Initializing model...')
     ## 2 random chains
