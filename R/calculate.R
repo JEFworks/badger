@@ -26,10 +26,11 @@ snp2df <- function(pos, delim=':') {
 #' @return Effective error rate
 #'
 #' @examples
-#' data(snpsHet_MM16ScSample)
+#' \dontrun{
 #' deletion.region <- data.frame('chr'=2, start=0, end=1e9)
 #' calcErrorRate('het', snpsCov, snpsRef, snpsAlt, cnvs=deletion.region) # ignore regions imapcted by deletion
 #' calcErrorRate('het', snpsCov, snpsRef, snpsAlt) # use all regions
+#' }
 calcErrorRate <- function(type, snpsCov, snpsRef, snpsAlt, cnvs=NULL, n=0.1) {
 
     snpsCovName <- snp2df(rownames(snpsCov))
@@ -80,3 +81,4 @@ calcErrorRate <- function(type, snpsCov, snpsRef, snpsAlt, cnvs=NULL, n=0.1) {
            het = calcErrorRateHet(snpsCov, snpsRef, snpsAlt, cnvs, n)
     )
 }
+

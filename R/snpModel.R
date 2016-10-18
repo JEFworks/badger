@@ -517,7 +517,7 @@ clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', 
 #' data(snpsHet_MM16ScSample)
 #' ## Bulk exome
 #' data(snpsHet_MM16BulkSample)
-#' \dontrun {
+#' \dontrun{
 #' gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
 #' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
 #' }

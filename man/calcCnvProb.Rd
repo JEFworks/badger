@@ -42,7 +42,7 @@ Run BADGER expression-only model to assess posterior probability of CNVs given n
 data(snpsHet_MM16ScSample)
 ## Bulk exome
 data(snpsHet_MM16BulkSample)
-\dontrun {
+\dontrun{
 gtfFile <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
 gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\\t')
 }

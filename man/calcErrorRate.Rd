@@ -26,9 +26,10 @@ Effective error rate
 Calculate effective error rate from sequencing, alignment, and other potential error sources
 }
 \examples{
-data(snpsHet_MM16ScSample)
+\dontrun{
 deletion.region <- data.frame('chr'=2, start=0, end=1e9)
 calcErrorRate('het', snpsCov, snpsRef, snpsAlt, cnvs=deletion.region) # ignore regions imapcted by deletion
 calcErrorRate('het', snpsCov, snpsRef, snpsAlt) # use all regions
+}
 }
 
