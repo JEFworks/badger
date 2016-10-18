@@ -31,6 +31,8 @@ snp2df <- function(pos, delim=':') {
 #' calcErrorRate('het', snpsCov, snpsRef, snpsAlt, cnvs=deletion.region) # ignore regions imapcted by deletion
 #' calcErrorRate('het', snpsCov, snpsRef, snpsAlt) # use all regions
 #' }
+#'
+#' @export
 calcErrorRate <- function(type, snpsCov, snpsRef, snpsAlt, cnvs=NULL, n=0.1) {
 
     snpsCovName <- snp2df(rownames(snpsCov))

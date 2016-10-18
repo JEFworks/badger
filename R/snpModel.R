@@ -63,6 +63,8 @@
 #' colnames(altCounts) <- colnames(refCounts) <- files
 #' }
 #'
+#' @export
+#'
 getAlleleCount <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 
     # Split posName into components for GRanges
@@ -186,6 +188,8 @@ getAlleleCount <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 #' colnames(cov) <- files
 #' }
 #'
+#' @export
+#'
 getCoverage <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 
     # Split posName into components for GRanges
@@ -260,6 +264,8 @@ getCoverage <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 #' clafProfile(r, cov.sc, l, cov.bulk, region)
 #' region <- data.frame('chr'=3, start=0, end=1e9) # neutral region
 #' clafProfile(r, cov.sc, l, cov.bulk, region)
+#'
+#' @export
 #'
 clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', gtf=NULL, plotGene=FALSE) {
 
@@ -531,6 +537,8 @@ clafProfile<- function(r, n.sc, l, n.bulk, region=NULL, filter=TRUE, delim=':', 
 #' \dontrun{
 #' results <- calcAlleleCnvProb(r, cov.sc, l, cov.bulk, region, gtf)
 #' }
+#'
+#' @export
 #'
 calcAlleleCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, mono = 0.7, pe = 0.01, filter=TRUE, likelihood=FALSE, n.iter=1000, quiet=TRUE, delim=':') {
 

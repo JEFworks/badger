@@ -17,6 +17,8 @@
 #' mat.ref <- log2(Normal.counts + 1)
 #' mats <- normalizedExpression(mat, mat.ref)
 #'
+#' @export
+#'
 normalizedExpression <- function(mat, mat.ref, minMeanBoth = 4.5, minMeanTest = 6, minMeanRef = 8, verbose=TRUE) {
 
     ## filter
@@ -73,6 +75,8 @@ normalizedExpression <- function(mat, mat.ref, minMeanBoth = 4.5, minMeanTest = 
 #' gos <- getBM(values=rownames(mat.tot),attributes=c("ensembl_gene_id","chromosome_name","start_position","end_position"),filters=c("ensembl_gene_id"),mart=mart.obj)
 #' gos$pos <- (gos$start_position + gos$end_position)/2
 #' tl <- plotExpHeatmap(mat.tot, gos, zlim=c(-0.5,0.5), window.size = 201)
+#'
+#' @export
 #'
 plotExpHeatmap <- function(mat.tot, gos, zlim=c(-2,2), window.size = 101, autosomesOnly=TRUE, orderCells=FALSE) {
 
@@ -133,6 +137,8 @@ plotExpHeatmap <- function(mat.tot, gos, zlim=c(-2,2), window.size = 101, autoso
 #' mats <- normalizedExpression(mat, mat.ref)
 #' gexp <- mats[[1]]
 #' fits <- mvFit(gexp)
+#'
+#' @export
 #'
 mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 
@@ -205,6 +211,8 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
 #' region <- data.frame('chr'=chr, start=0, end=1e9)
 #' set.seed(0)
 #' results <- calcGexpCnvProb(gexp, fits, 0.15, region)
+#'
+#' @export
 #'
 calcGexpCnvProb <- function(gexp, fits, m, region, quiet=TRUE) {
 

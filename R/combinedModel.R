@@ -35,6 +35,7 @@
 #' results <- calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m=0.15)
 #' }
 #'
+#' @export
 calcCombCnvProb <- function(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, m, filter=TRUE, pe = 0.01, mono = 0.7, n.iter=1000, quiet=TRUE, delim=':') {
 
     #####

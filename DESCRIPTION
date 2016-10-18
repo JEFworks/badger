@@ -19,4 +19,5 @@ Imports:
     RcppArmadillo,
     caTools,
     RColorBrewer,
-    biomaRt
+    biomaRt,
+    rjags

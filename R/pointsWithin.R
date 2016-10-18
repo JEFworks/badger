@@ -11,6 +11,8 @@
 #'    )
 #' range2GRanges(df)
 #'
+#' @export
+#'
 range2GRanges <- function(df) {
     gr <- GenomicRanges::GRanges(
         seqnames = df[,1],
@@ -28,6 +30,7 @@ range2GRanges <- function(df) {
 #'    )
 #' pos2GRanges(snps)
 #'
+#' @export
 pos2GRanges <- function(df) {
     gr <- GenomicRanges::GRanges(
         seqnames = df[,1],
@@ -58,6 +61,7 @@ pos2GRanges <- function(df) {
 #'     )
 #' pointsWithin(snp2, cnv)
 #'
+#' @export
 pointsWithin <- function(pos, ranges) {
     posGRanges <- pos2GRanges(pos)
     rangesGRanges <- range2GRanges(ranges)
@@ -85,6 +89,8 @@ pointsWithin <- function(pos, ranges) {
 #'     'endPos' = c(100, 20000, 2)
 #'     )
 #' insideRanges(snpList, cnv)
+#'
+#' @export
 #'
 insideRange <- function(posList, range) {
     hits <- unlist(bplapply(seq_len(nrow(posList)), function(i) {
@@ -114,6 +120,8 @@ insideRange <- function(posList, range) {
 #'     'endPos' = c(100, 20000, 2)
 #'     )
 #' insideCnvs(snpList, cnv)
+#'
+#' @export
 #'
 insideCnvs <- function(posList, cnvs) {
     posGRanges <- pos2GRanges(posList)
@@ -145,6 +153,8 @@ insideCnvs <- function(posList, cnvs) {
 #' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
 #' geneFactors(posList, gtf)
 #' }
+#'
+#' @export
 #'
 geneFactors <- function(posList, gtf, fill=TRUE, gene=TRUE) {
     nam <- paste(posList[,1], posList[,2], sep=':') # preserve names
