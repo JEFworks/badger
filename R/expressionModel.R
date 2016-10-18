@@ -1,6 +1,4 @@
-#' Functionalities related to expression model
-#'
-#' @author: Jean Fan
+# Functionalities related to expression model
 
 
 #' Normalize gene expression to a normal reference for expression-based karyotyping

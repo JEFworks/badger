@@ -1,6 +1,4 @@
-#' Functionalities related to snp model
-#'
-#' @author: Jean Fan
+# Functionalities related to snp model
 
 
 #' Get alternative allele count for positions of interest

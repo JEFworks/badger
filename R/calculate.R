@@ -1,7 +1,5 @@
-#' Calculate various errors and bias metrics
-#'
-#' @author Jean Fan
-#'
+# Calculate various errors and bias metrics
+
 
 # Helper function Peter likes
 sn <- function(x) { names(x) <- x; x }

@@ -1,7 +1,5 @@
-#' Helper functionalities to determine if SNPs are within CNVs or other ranges
-#'
-#' @author: Jean Fan
-#'
+# Helper functionalities to determine if SNPs are within CNVs or other ranges
+
 
 #' From data frame of ranges to GRanges object
 #'
@@ -127,8 +125,14 @@ insideCnvs <- function(posList, cnvs) {
     return(hit)
 }
 
-#' returns a factor vector across pos (chr:pos vector)
+#' Returns a factor vector across pos (chr:pos vector)
 #' indicating if the pos is in one of the genes (row number)
+#'
+#' @param posList Data frame of SNP positions
+#' @param gtf GTF file contents
+#' @param fill Boolean of whether to map SNPs not annotated as within genes to unique gene ids
+#' @param gene Boolean of whether to use genes (or exons only)
+#' @return a factor vector across pos (chr:pos vector) indicating if the pos is in one of the genes (row number)
 #'
 #' @examples
 #' In this example gtf, the chromosomes do not have the 'chr' prefix
@@ -136,8 +140,12 @@ insideCnvs <- function(posList, cnvs) {
 #'     'chr' = c('1', '1', '1', '2', '2', '3'),
 #'     'pos' = c(11869+7, 11869+100, 14363+101, 29554+0, 52473+10, 62948+5)
 #'     )
-#' file <- 'Homo_sapiens.GRCh37.75.gtf'
+#' \dontrun{
+#' file <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
 #' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
+#' geneFactors(posList, gtf)
+#' }
+#'
 geneFactors <- function(posList, gtf, fill=TRUE, gene=TRUE) {
     nam <- paste(posList[,1], posList[,2], sep=':') # preserve names
     posGRanges <- pos2GRanges(posList)

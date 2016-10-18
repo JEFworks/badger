@@ -1,12 +1,12 @@
 Package: badger
 Type: Package
-Title: Bayesian Hierarchical Approach
+Title: Bayesian approach for detecting copy number alterations from single cell RNA-seq data
 Version: 0.1
-Date: 2016-06-27
+Date: 2016-10-18
 Author: Jean Fan [aut, cre]
 Maintainer: Jean Fan <jeanfan@fas.harvard.edu>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: The badger package implements a set of statistical methods for inferring copy number alterations and loss of heterozygosity events from single-cell RNA-seq data.
+License: GPL-2
 LazyData: TRUE
 Imports:
     reshape2,
