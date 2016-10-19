@@ -182,7 +182,7 @@ mvFit <- function(gexp, num.genes = seq(5, 100, by=5), rep = 1000, plot=FALSE) {
             plot(x2, y2)
             plot(log10(df$x), log10(df$y), type="l")
             points(x2, y2, type="l", col="red")
-           plot(df$x, df$y, type="l")
+            plot(df$x, df$y, type="l")
             points(10^x2, 10^y2, type="l", col="red")
         }
 

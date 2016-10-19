@@ -19,6 +19,8 @@ calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m,
 
 \item{region}{Region of interest such as expected CNV boundaries}
 
+\item{gtf}{GTF file contents for mapping SNPs to genes. Required if plotGene = TRUE}
+
 \item{gexp}{Normalized gene expression matrix}
 
 \item{fits}{Fit for variance around mean}

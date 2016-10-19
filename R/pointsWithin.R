@@ -6,7 +6,7 @@
 #' @param df Data frame with chr, start, and end columns
 #'
 #' @examples
-#' cnv <- data.frame(
+#' df <- data.frame(
 #'    'chr' = c('chr1', 'chr2'),
 #'    'startPos' = c(5, 0),
 #'    'endPos' = c(100, 20000)
@@ -84,37 +84,6 @@ pointsWithin <- function(pos, ranges) {
     return(hit)
 }
 
-#' Determine whether a set of SNPs are in a CNV region or other ranges
-#' Super slow...see insideCNVs instead
-#'
-#' @param posList data frame ($chr / $pos)
-#' @param range : data frame ($chr / $start / $end)
-#' @return a T/F vector of whether the positions are in the CNVs
-#'
-#' @examples
-#' snpList <- data.frame(
-#'     'chr' = c('chr1', 'chr1', 'chr1', 'chr2', 'chr2', 'chr3'),
-#'     'pos' = c(7, 100, 101, 0, 10, 5)
-#'     )
-#' cnv <- data.frame(
-#'     'chr' = c('chr1', 'chr2', 'chr3'),
-#'     'startPos' = c(5, 0, 1),
-#'     'endPos' = c(100, 20000, 2)
-#'     )
-#' insideRanges(snpList, cnv)
-#'
-#' @export
-#'
-insideRange <- function(posList, range) {
-    hits <- unlist(bplapply(seq_len(nrow(posList)), function(i) {
-        pos <- posList[i,]
-        hit <- pointsWithin(pos, ranges)
-        # if hit ie. within range, then will have length 1
-        # if no hit, then will have length 0
-        length(hit)!=0
-    }))
-    return(hits)
-}
 
 #' Returns a vector of T/F depending on whether SNPs are in CNV regions
 #'

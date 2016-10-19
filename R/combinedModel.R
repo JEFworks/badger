@@ -5,6 +5,7 @@
 #' @param l Vector of alt allele count in bulk
 #' @param cov.bulk Vector of coverage in bulk
 #' @param region Region of interest such as expected CNV boundaries
+#' @param gtf GTF file contents for mapping SNPs to genes. Required if plotGene = TRUE
 #' @param gexp Normalized gene expression matrix
 #' @param fits Fit for variance around mean
 #' @param gos Gene position table

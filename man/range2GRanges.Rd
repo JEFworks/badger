@@ -13,7 +13,7 @@ range2GRanges(df)
 From data frame of ranges to GRanges object
 }
 \examples{
-cnv <- data.frame(
+df <- data.frame(
    'chr' = c('chr1', 'chr2'),
    'startPos' = c(5, 0),
    'endPos' = c(100, 20000)

@@ -12,7 +12,7 @@
 #'   refAlleleCount reference allele count information for each position of interest
 #'
 #' @examples
-#' \donrun{
+#' \dontrun{
 #' Get germline hets from ExAC database or output from GATK for example
 #' vcfFile <- "data-raw/ExAC.r0.3.sites.vep.vcf.gz"
 #' # example with region of chromosome
@@ -139,7 +139,7 @@ getAlleleCount <- function(alleleInfo, bamFile, indexFile, verbose=F) {
 #' @return totCount Total coverage count information for each position of interest
 #'
 #' @examples
-#' \donrun{
+#' \dontrun{
 #' Get germline hets from ExAC database or output from GATK for example
 #' vcfFile <- "data-raw/ExAC.r0.3.sites.vep.vcf.gz"
 #' # example with region of chromosome
