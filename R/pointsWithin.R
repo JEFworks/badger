@@ -16,6 +16,8 @@
 #' @export
 #'
 range2GRanges <- function(df) {
+    require(GenomicRanges)
+    require(IRanges)
     gr <- GenomicRanges::GRanges(
         seqnames = df[,1],
         ranges=IRanges(start = df[,2], end = df[,3])
@@ -135,6 +137,7 @@ insideRange <- function(posList, range) {
 insideCnvs <- function(posList, cnvs) {
     posGRanges <- pos2GRanges(posList)
     rangesGRanges <- range2GRanges(cnvs)
+    require(GenomicRanges)
     overlap <- GenomicRanges::findOverlaps(rangesGRanges, posGRanges)
     # which of the ranges did the position hit
     hit <- rep(FALSE, nrow(posList))  # initialize
