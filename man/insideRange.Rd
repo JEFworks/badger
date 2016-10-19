@@ -10,7 +10,7 @@ insideRange(posList, range)
 \arguments{
 \item{posList}{data frame ($chr / $pos)}
 
-\item{cnvs}{: data frame ($chr / $start / $end)}
+\item{range}{: data frame ($chr / $start / $end)}
 }
 \value{
 a T/F vector of whether the positions are in the CNVs

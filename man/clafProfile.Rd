@@ -14,6 +14,8 @@ clafProfile(r, n.sc, l, n.bulk, region = NULL, filter = TRUE, delim = ":",
 
 \item{l}{Alt allele count in bulk}
 
+\item{n.bulk}{Coverage in bulk}
+
 \item{region}{Restrict plotting to select region. Optional. Default: NULL}
 
 \item{filter}{Boolean of whether to filter for SNPs with coverage. Default: TRUE}
@@ -23,8 +25,6 @@ clafProfile(r, n.sc, l, n.bulk, region = NULL, filter = TRUE, delim = ":",
 \item{gtf}{GTF file contents for mapping SNPs to genes. Required if plotGene = TRUE}
 
 \item{plotGene}{Boolean of whether to plot gene track. Default: FALSE}
-
-\item{n}{Coverage in bulk}
 }
 \description{
 Composite Minor Allele Frequency (CLAF) Profile plot

@@ -39,6 +39,8 @@ range2GRanges <- function(df) {
 #' @export
 #'
 pos2GRanges <- function(df) {
+    require(GenomicRanges)
+    require(IRanges)
     gr <- GenomicRanges::GRanges(
         seqnames = df[,1],
         ranges=IRanges(start = df[,2], width=1)
@@ -50,7 +52,7 @@ pos2GRanges <- function(df) {
 #' Determine if a point is within a range
 #'
 #' @param pos Dataframe with chr and pos columns
-#' @param cnv Dataframe with chr, start, and end columns
+#' @param ranges Dataframe with chr, start, and end columns
 #'
 #' @examples
 #' snp1 <- data.frame(
@@ -86,7 +88,7 @@ pointsWithin <- function(pos, ranges) {
 #' Super slow...see insideCNVs instead
 #'
 #' @param posList data frame ($chr / $pos)
-#' @param cnvs : data frame ($chr / $start / $end)
+#' @param range : data frame ($chr / $start / $end)
 #' @return a T/F vector of whether the positions are in the CNVs
 #'
 #' @examples
@@ -160,7 +162,7 @@ insideCnvs <- function(posList, cnvs) {
 #'     'pos' = c(11869+7, 11869+100, 14363+101, 29554+0, 52473+10, 62948+5)
 #'     )
 #' \dontrun{
-#' file <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
+#' gtfFile <- 'Homo_sapiens.GRCh37.75.gtf'
 #' gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\t')
 #' geneFactors(posList, gtf)
 #' }

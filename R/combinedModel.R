@@ -12,7 +12,6 @@
 #' @param mono Rate of mono-allelic expression. Default: 0.7
 #' @param pe Effective error rate to capture error from sequencing, etc. Default: 0.01
 #' @param filter Boolean for whether to filter out SNP sites with no coverage. Default: TRUE
-#' @param likelihood Boolean for whether to use likelihood based estimate of posterior. Default: FALSE
 #' @param n.iter Number of iterations in MCMC. Default: 1000
 #' @param quiet Boolean of whether to suppress progress bar. Default: TRUE
 #' @param delim Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897

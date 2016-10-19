@@ -29,7 +29,7 @@ posList <- data.frame(
     'pos' = c(11869+7, 11869+100, 14363+101, 29554+0, 52473+10, 62948+5)
     )
 \dontrun{
-file <- 'data-raw/Homo_sapiens.GRCh37.75.gtf'
+gtfFile <- 'Homo_sapiens.GRCh37.75.gtf'
 gtf <- read.table(gtfFile, header=F, stringsAsFactors=F, sep='\\t')
 geneFactors(posList, gtf)
 }

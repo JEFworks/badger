@@ -38,8 +38,6 @@ calcCombCnvProb(r, cov.sc, l, cov.bulk, region, gtf, gexp, fits, gos, m,
 \item{quiet}{Boolean of whether to suppress progress bar. Default: TRUE}
 
 \item{delim}{Delimiter for names of SNPs as Chromosome[delim]Position. Default: ":" ex. chr1:283838897}
-
-\item{likelihood}{Boolean for whether to use likelihood based estimate of posterior. Default: FALSE}
 }
 \value{
 List of posterior probabilities for CNV and direction of CNV (deletion vs. amplification)
